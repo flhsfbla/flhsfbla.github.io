@@ -1,6 +1,9 @@
 h1 {
+  font-size: 50px;
   text-align: center;
-  margin-bottom: 0px auto;
+  margin: 0px;
+  margin-top: 40px;
+  margin-bottom: 0px;
 }
 
 .blue {
@@ -9,6 +12,7 @@ h1 {
 
 /* Style the tab */
 .tab {
+  margin-top: 29px;
   text-align: center;
   overflow: hidden;
   border: 1px solid #ccc;
@@ -31,4 +35,18 @@ h1 {
 /* Change background color of buttons on hover */
 .tab button:hover {
   background-color: #ddd;
+}
+
+.membersImage {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.logoImages {
+  margin: 0px;
+  margin-left: 20px;
+  margin-right: 20px;
+  width: 100px;
+  position: relative;
+  top: -30px;
 }
