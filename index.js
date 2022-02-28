@@ -10,6 +10,8 @@ var fallSpeed = 0;
 var isGround = false;
 
 var velocity = 1.5;
+var score= 10;
+var actScore = 0;
 
 var playerState = {
     x: 20,
@@ -23,24 +25,23 @@ var playerState = {
         down: false
     }
 }
-
-var block1 = {
-    x: width,
-    y: height - 12,
-    width: 10,
-    height: 24,
-    draw: function(){
+//create blocks
+class Block {
+    constructor(x, width) {
+        this.x = x;
+        this.y = height - 12;
+        this.width = width;
+        this.height = 24;
+    }
+    draw(){
+        ctx.fillStyle = "purple";
         ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
     }
 }
-var block2 = {
-    x: width + 100,
-    y: height - 12,
-    width: 10,
-    height: 24,
-    draw: function(){
-        ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-    }
+
+const blocks = [];
+for(let i = 0; i < 4; i++){
+    blocks[i] = new Block(width + i*100, 10);
 }
 
 var keyMap = {
@@ -72,10 +73,16 @@ window.addEventListener("keyup", keyup, false);
 
 function draw(){
     ctx.clearRect(0, 0, width, height);
-
+    ctx.fillStyle = "purple";
     ctx.fillRect(playerState.x - 5, playerState.y - 5, playerState.width, playerState.height);
-    block1.draw();
-    block2.draw();
+    for(let i = 0; i< blocks.length; i++){
+        blocks[i].draw();
+    }
+    //score
+    ctx.fillStyle = "black";
+    ctx.font = "italic bold 10pt Tahoma";
+    ctx.fillText(score, 0, 10);
+
 }
 
 
@@ -83,6 +90,7 @@ function draw(){
 function update(progress){
     //player update and movement
     let p = velocity;
+    velocity += .0001;
     /*if(playerState.pressedKeys.left){
         playerState.x -= p;
     }
@@ -120,47 +128,40 @@ function update(progress){
     else if(fallSpeed > 0){
         fallSpeed = 0;
     }
-    //block movement
-    block1.x -= p;
-    if(block1.x < 0 + block1.width/2){
-        respawnBlock(block1);
-    }
-    if(block1.y > height - block1.height / 2){
-        block1.y = height - block1.height / 2;
-    }
-    block2.x -= p;
-    if(block2.x < 0 + block2.width/2){
-        respawnBlock(block2);
-    }
-    if(block2.y > height - block2.height / 2){
-        block2.y = height - block2.height / 2;
-    }
-    //collisions
-    if(collide(block1, playerState)){
-        end();
-    }
-    if(collide(block2, playerState)){
-        end();
+    //block movement and collisions
+    for(let i = 0; i < blocks.length; i++){
+        blocks[i].x -= p;
+        if(blocks[i].x < 0 - blocks[i].width/2){
+            respawnBlock(blocks[i]);
+        }
+        if(collide(blocks[i], playerState)){
+            end();
+        }
     }
     //restart
     if(playerState.pressedKeys.r){
         reset();
     }
+    //score
+    actScore += p;
+    score = Math.round(actScore / 10);
 }
 
 function end(){
     velocity = 0;
+    fallSpeed = 0;
+    isGround = false;
 }
 
 function reset(){
-    velocity = 1;
-    block1.x = width;
-    block1.y = height - 12;
-    block2.x = width + 100;
-    block2.y = height - 12;
+    velocity = 1.5;
+    for(let i = 0; i < blocks.length; i++){
+        blocks[i].x = width + i*100;
+    }
     playerState.y = height/2;
     isGround = false;
     fallSpeed = 0;
+    actScore = 0;
 }
 
 function collide(obj1, player){
@@ -197,6 +198,7 @@ function pointInObj(x, y, obj){
 function respawnBlock(block){
     var rand = Math.floor(Math.random()*150);
     block.x = width + rand + block.width;
+
 }
 
 function loop(timestamp){
