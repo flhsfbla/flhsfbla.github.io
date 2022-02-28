@@ -1,10 +1,11 @@
+
 var width = 800;
 var height = 200;
 var canvas = document.getElementById("canvas");
 var width = canvas.width;
 var height = canvas.height;
 var ctx = canvas.getContext("2d");
-ctx.fillStyle = "purple";
+
 
 var fallSpeed = 0;
 var isGround = false;
@@ -12,6 +13,7 @@ var isGround = false;
 var velocity = 1.5;
 var score= 10;
 var actScore = 0;
+var highScore = 0;
 
 var playerState = {
     x: 20,
@@ -81,11 +83,10 @@ function draw(){
     //score
     ctx.fillStyle = "black";
     ctx.font = "italic bold 10pt Tahoma";
-    ctx.fillText(score, 5, 15);
+    ctx.fillText("Score: " + score, 0, 15);
+    ctx.fillText("Highscore: " + highScore, 0, 35);
 
 }
-
-
 
 function update(progress){
     //player update and movement
@@ -151,6 +152,9 @@ function end(){
     velocity = 0;
     fallSpeed = 0;
     isGround = false;
+    if(score > highScore){
+        highScore = score;
+    }
 }
 
 function reset(){
@@ -211,3 +215,4 @@ function loop(timestamp){
 }
 var lastRender = 0;
 window.requestAnimationFrame(loop);
+
