@@ -81,7 +81,7 @@ function draw(){
     //score
     ctx.fillStyle = "black";
     ctx.font = "italic bold 10pt Tahoma";
-    ctx.fillText(score, 5, 10);
+    ctx.fillText(score, 5, 15);
 
 }
 
