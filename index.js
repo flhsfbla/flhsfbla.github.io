@@ -9,7 +9,7 @@ ctx.fillStyle = "purple";
 var fallSpeed = 0;
 var isGround = false;
 
-var velocity = 1;
+var velocity = 1.5;
 
 var playerState = {
     x: 20,
