@@ -6,7 +6,6 @@ var width = canvas.width;
 var height = canvas.height;
 var ctx = canvas.getContext("2d");
 
-
 var fallSpeed = 0;
 var isGround = false;
 
@@ -169,12 +168,6 @@ function reset(){
 }
 
 function collide(obj1, player){
-    //x - width, x + width
-    //y - height, y + height
-    //up left(x -width/2, y - height/2)
-    //bottom left(x - width/2, y + height/2)
-    //up right(x + widht/2. y - height/2)
-    //bottom right(x + width/2, y + height/2)
     if(pointInObj(player.x - player.width/2, player.y-player.height/2, obj1)){
         return true;
     }
