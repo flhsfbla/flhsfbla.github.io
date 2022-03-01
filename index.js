@@ -139,7 +139,7 @@ function update(progress){
         }
     }
     //restart
-    if(playerState.pressedKeys.r || playerState.pressedKeys.space){
+    if(playerState.pressedKeys.r || playerState.pressedKeys.up){
         reset();
     }
     //score
