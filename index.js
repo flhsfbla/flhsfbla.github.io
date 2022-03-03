@@ -34,11 +34,11 @@ class Player{
         //ctx.fillStyle = "purple";
         //ctx.fillRect(this.x - 5, this.y - 5, this.width, this.height);
         //ctx.drawImage(playerImg, this.x - 7, this.y - 11);
-        if(this.i%30 <= 15 && isGround){
+        if(this.i%30 <= 15 && isGround && velocity != 0){
             ctx.drawImage(playerImg, 765, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
-        }else if(this.i&30 >= 15 && isGround){
+        }else if(this.i&30 >= 15 && isGround && velocity != 0){
             ctx.drawImage(playerImg, 809, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
-        }else if(isAlive == false){
+        }else if(velocity == 0){
             ctx.drawImage(playerImg, 853, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
         }else{
             ctx.drawImage(playerImg, 677, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
