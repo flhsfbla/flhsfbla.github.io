@@ -1,4 +1,3 @@
-
 var width = 800;
 var height = 200;
 var canvas = document.getElementById("canvas");
@@ -8,24 +7,53 @@ var ctx = canvas.getContext("2d");
 
 var fallSpeed = 0;
 var isGround = false;
+var isAlive = true;
 
 var velocity = 1.5;
 var score= 10;
 var actScore = 0;
 var highScore = 0;
 
-var playerState = {
-    x: 20,
-    y: height / 2,
-    width: 10,
-    height: 10,
-    pressedKeys: {
-        left: false,
-        right: false,
-        up: false,
-        down: false
+//create player
+class Player{
+    constructor(img){
+        this.x = 20;
+        this.y = height/2;
+        this.width = 10;
+        this.height = 10;
+        this.pressedKeys = {
+            left: false,
+            right: false,
+            up: false,
+            down: false
+        }
+        this.img = img;
+        this.i = 0;
+    }
+    draw(){
+        //ctx.fillStyle = "purple";
+        //ctx.fillRect(this.x - 5, this.y - 5, this.width, this.height);
+        //ctx.drawImage(playerImg, this.x - 7, this.y - 11);
+        if(this.i%30 <= 15 && isGround){
+            ctx.drawImage(playerImg, 765, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
+        }else if(this.i&30 >= 15 && isGround){
+            ctx.drawImage(playerImg, 809, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
+        }else if(isAlive == false){
+            ctx.drawImage(playerImg, 853, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
+        }else{
+            ctx.drawImage(playerImg, 677, 3, 44, 45, this.x - 11, this.y - 18, 22, 23);
+        }
+        this.i++;
+        this.i%1000;
     }
 }
+var player = new Player(playerImg);
+var playerHead = new Player(null);
+playerHead.x = player.x + 5;
+playerHead.y = player.y -10;
+var playerImg = new Image();
+playerImg.src = '/images/offline-sprite-1x.png';
+playerImg.onload = player.draw;
 //create blocks
 class Block {
     constructor(x, width) {
@@ -41,7 +69,7 @@ class Block {
 }
 
 const blocks = [];
-for(let i = 0; i < 4; i++){
+for(let i = 0; i < 3; i++){
     blocks[i] = new Block(width + i*100, 10);
 }
 
@@ -61,12 +89,12 @@ var keyMap = {
 
 function keydown(event){
     var key = keyMap[event.keyCode];
-    playerState.pressedKeys[key] = true;
+    player.pressedKeys[key] = true;
 }
 
 function keyup(event){
     var key = keyMap[event.keyCode];
-    playerState.pressedKeys[key] = false;
+    player.pressedKeys[key] = false;
 }
 
 window.addEventListener("keydown", keydown, false);
@@ -75,7 +103,8 @@ window.addEventListener("keyup", keyup, false);
 function draw(){
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "purple";
-    ctx.fillRect(playerState.x - 5, playerState.y - 5, playerState.width, playerState.height);
+    //ctx.fillRect(playerHead.x - 5, playerHead.y - 5, playerHead.width, playerHead.height);
+    player.draw();
     for(let i = 0; i< blocks.length; i++){
         blocks[i].draw();
     }
@@ -84,45 +113,34 @@ function draw(){
     ctx.font = "italic bold 10pt Tahoma";
     ctx.fillText("Score: " + score, 0, 15);
     ctx.fillText("Highscore: " + highScore, 0, 35);
-
 }
 
 function update(progress){
     //player update and movement
     let p = velocity;
-    velocity += .0001;
-    /*if(playerState.pressedKeys.left){
-        playerState.x -= p;
-    }
-    if(playerState.pressedKeys.right){
-        playerState.x += p;
-    }
-    */
-    if(playerState.pressedKeys.up && isGround){
+    velocity += .001;
+    if(player.pressedKeys.up && isGround){
         fallSpeed = -3;
         isGround = false;
     }
-    /*if(playerState.pressedKeys.down){
-        playerState.y += p;
-    }
-    */
-   //keep in bounds
-    if (playerState.x > width - playerState.width/2) {
-        playerState.x = width - playerState.width/2;
+    //keep in bounds
+    if (player.x > width - player.width/2) {
+        player.x = width - player.width/2;
       }
-      else if (playerState.x < 0 + playerState.width/2) {
-        playerState.x = 0 + playerState.width/2;
+      else if (player.x < 0 + player.width/2) {
+        player.x = 0 + player.width/2;
       }
-      if (playerState.y > height - playerState.height/2) {
-        playerState.y = height - playerState.height/2;
+    if (player.y > height - player.height/2) {
+        player.y = height - player.height/2;
         isGround = true;
-      }
-      else if (playerState.y < 0 + playerState.height/2) {
-        playerState.y = 0 + playerState.height/2;
-      }
+    }
+    else if (player.y < 0 + player.height/2) {
+        player.y = 0 + player.height/2;
+    }
     //falling
     if(!isGround){
-        playerState.y += fallSpeed;
+        player.y += fallSpeed;
+        playerHead.y += fallSpeed;
         fallSpeed += 0.1;
     }
     else if(fallSpeed > 0){
@@ -134,12 +152,12 @@ function update(progress){
         if(blocks[i].x < 0 - blocks[i].width/2){
             respawnBlock(blocks[i]);
         }
-        if(collide(blocks[i], playerState)){
+        if(collide(blocks[i], player) || collide(blocks[i], playerHead)){
             end();
         }
     }
     //restart
-    if(playerState.pressedKeys.r){
+    if(player.pressedKeys.r || (player.pressedKeys.up && isAlive == false)){
         reset();
     }
     //score
@@ -154,6 +172,12 @@ function end(){
     if(score > highScore){
         highScore = score;
     }
+    var delayInMilliseconds = 50;
+    setTimeout(function() {
+        if(velocity == 0){
+            isAlive = false;
+        }
+    }, delayInMilliseconds);
 }
 
 function reset(){
@@ -161,23 +185,25 @@ function reset(){
     for(let i = 0; i < blocks.length; i++){
         blocks[i].x = width + i*100;
     }
-    playerState.y = height/2;
+    player.y = height/2;
+    playerHead.y = player.y -10;
     isGround = false;
     fallSpeed = 0;
     actScore = 0;
+    isAlive = true;
 }
 
-function collide(obj1, player){
-    if(pointInObj(player.x - player.width/2, player.y-player.height/2, obj1)){
+function collide(obj1, obj2){
+    if(pointInObj(obj2.x - obj2.width/2, obj2.y-obj2.height/2, obj1)){
         return true;
     }
-    if(pointInObj(player.x - player.width/2, player.y + player.height/2, obj1)){
+    if(pointInObj(obj2.x + obj2.width/2, obj2.y - obj2.height/2, obj1)){
         return true;
     }
-    if(pointInObj(player.x + player.width/2, player.y - player.height/2, obj1)){
+    if(pointInObj(obj2.x - obj2.width/2, obj2.y + obj2.height/2, obj1)){
         return true;
     }
-    if(pointInObj(player.x + player.width/2, player.y + player.height/2, obj1)){
+    if(pointInObj(obj2.x + obj2.width/2, obj2.y + obj2.height/2, obj1)){
         return true;
     }
     return false;
@@ -195,12 +221,10 @@ function pointInObj(x, y, obj){
 function respawnBlock(block){
     var rand = Math.floor(Math.random()*150);
     block.x = width + rand + block.width;
-
 }
 
 function loop(timestamp){
     var progress = timestamp - lastRender;
-    
     update(progress);
     draw();
     lastRender = timestamp;
@@ -208,4 +232,3 @@ function loop(timestamp){
 }
 var lastRender = 0;
 window.requestAnimationFrame(loop);
-
