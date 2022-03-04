@@ -54,6 +54,7 @@ playerHead.y = player.y -10;
 var playerImg = new Image();
 playerImg.src = '/images/offline-sprite-1x.png';
 playerImg.onload = player.draw;
+
 //create blocks
 class Block {
     constructor(x, width) {
@@ -61,10 +62,50 @@ class Block {
         this.y = height - 12;
         this.width = width;
         this.height = 24;
+        this.onBoard = true;
+        this.id = 1;
     }
     draw(){
         ctx.fillStyle = "purple";
-        ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+        //ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+        switch (this.id){
+            case 1:
+                //1 big
+                ctx.drawImage(blockImg, 332, 3, 24, 46, this.x - 6, this.y - 12, 12, 24);
+                this.height = 24;
+                this.width = 12;
+                break;
+            case 2:
+                //2 big
+                ctx.drawImage(blockImg, 357, 3, 50, 48, this.x - 12, this.y - 12, 25, 24);
+                this.height = 24;
+                this.width = 25;
+                break;
+            case 3:
+                //1 small
+                ctx.drawImage(blockImg, 228, 3, 16, 34, this.x - 4, this.y - 6, 8, 17);
+                this.height = 17;
+                this.width = 8;
+                break;
+            case 4:
+                //2 small
+                ctx.drawImage(blockImg, 245, 3, 34, 34, this.x - 9, this.y - 6, 17, 17);
+                this.height = 17;
+                this.width = 17;
+                break;
+            case 5:
+                //3 small
+                ctx.drawImage(blockImg, 279, 3, 51, 34, this.x - 13, this.y - 6, 26, 17);
+                this.height = 17;
+                this.width = 26;
+                break;
+            case 6:
+                //2 big 2 small
+                ctx.drawImage(blockImg, 407, 3, 75, 50, this.x - 19, this.y - 13, 38, 25);
+                this.height = 25;
+                this.width = 38;
+                break;
+        }
     }
 }
 
@@ -72,7 +113,9 @@ const blocks = [];
 for(let i = 0; i < 3; i++){
     blocks[i] = new Block(width + i*100, 10);
 }
-
+var blockImg = new Image();
+blockImg.src = '/images/offline-sprite-1x.png';
+blockImg.onload = draw();
 var keyMap = {
     68: 'right',
     65: 'left',
@@ -118,7 +161,7 @@ function draw(){
 function update(progress){
     //player update and movement
     let p = velocity;
-    velocity += .001;
+    velocity += .0001;
     if(player.pressedKeys.up && isGround){
         fallSpeed = -3;
         isGround = false;
@@ -149,8 +192,9 @@ function update(progress){
     //block movement and collisions
     for(let i = 0; i < blocks.length; i++){
         blocks[i].x -= p;
-        if(blocks[i].x < 0 - blocks[i].width/2){
+        if(blocks[i].x < 0 - blocks[i].width/2 && blocks[i].onBoard == true){
             respawnBlock(blocks[i]);
+            blocks[i].onBoard = false;
         }
         if(collide(blocks[i], player) || collide(blocks[i], playerHead)){
             end();
@@ -219,8 +263,28 @@ function pointInObj(x, y, obj){
 }
 
 function respawnBlock(block){
-    var rand = Math.floor(Math.random()*150);
-    block.x = width + rand + block.width;
+    //block.x = width + rand + block.width;
+    var randId = Math.floor(Math.random()*120);
+    if(randId <= 30){
+        block.id = 1;
+    }else if(randId <= 60){
+        block.id = 3;
+    }else if(randId <= 80){
+        block.id = 4;
+    }else if(randId <= 100){
+        block.id = 2;
+    }else if(randId <= 110){
+        block.id = 5;
+    }else if(randId <= 120){
+        block.id = 6;
+    }else{
+        block.id = 1;
+    }
+    var delayInMilliseconds = Math.floor(Math.random()*200);
+    setTimeout(function() {
+        block.x = width + block.width;
+        block.onBoard = true;
+    }, delayInMilliseconds);
 }
 
 function loop(timestamp){
@@ -230,5 +294,6 @@ function loop(timestamp){
     lastRender = timestamp;
     window.requestAnimationFrame(loop);
 }
+
 var lastRender = 0;
 window.requestAnimationFrame(loop);
