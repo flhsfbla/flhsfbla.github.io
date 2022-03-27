@@ -56,3 +56,14 @@ h1 {
   margin-right: auto;
   width: 50%;
 }
+.sidebyside{
+  float: left;
+  width: 50%:
+  padding: 10px;
+}
+/*Below is to make the sidebyside class work and clear properly*/
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
