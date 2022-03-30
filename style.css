@@ -50,17 +50,27 @@ h1 {
   position: relative;
   top: -30px;
 }
-.center{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
+.mainImage {
+  width: 100vw;
+  background-image: src= "/images/members.jpg";
+  filter: brightness(40%);
 }
-.row{
+
+.imageText {
+  width: 100%;
+  height: 100%;
+  color: white;
+  display: flex;
+  font-size: 2.5vw;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.row {
   display: flex;
 }
-.coloumn{
+.coloumn {
   flex: 50%;
   padding: 5px;
 }
-
